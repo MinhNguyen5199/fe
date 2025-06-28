@@ -1,3 +1,4 @@
+// src/app/context/AuthContext.tsx
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
@@ -30,9 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserProfile(null);
       return;
     }
-
     try {
-      const response = await fetch('http://localhost:4000/get-user-profile', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-user-profile`, {
         headers: { 'Authorization': `Bearer ${currentSession.access_token}` }
       });
 
@@ -54,14 +54,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       if (session) {
         await fetchUserProfile();
       }
-      setLoading(false);
-    });
+      setLoading(false); // This is the crucial change
+    };
+
+    initializeAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
@@ -95,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading ? children : <div>Loading Application...</div>}
+      {children}
     </AuthContext.Provider>
   );
 }

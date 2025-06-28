@@ -28,8 +28,10 @@ export default function AdoptGremlinButton() {
             },
         });
 
+        console.log(response.ok);
+
         if (response.ok) {
-            router.refresh();
+            window.location.reload();
         } else {
             const data = await response.json();
             setError(data.message || 'An unexpected error occurred.');

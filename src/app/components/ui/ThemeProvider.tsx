@@ -1,3 +1,4 @@
+// src/app/components/ui/ThemeProvider.tsx
 'use client';
 
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
@@ -13,43 +14,25 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [hasMounted, setHasMounted] = useState(false);
 
+  // This effect runs once on the client after the component mounts.
   useEffect(() => {
-    setHasMounted(true);
+    setHasMounted(true); // Signal that the component has mounted.
 
-    const html = document.documentElement;
     const savedTheme = localStorage.getItem('theme');
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+    let initialMode = false;
     if (savedTheme) {
-      const initialMode = savedTheme === 'dark';
-      setIsDarkMode(initialMode);
-      if (initialMode) {
-        html.classList.add('dark');
-      } else {
-        html.classList.remove('dark');
-      }
+      initialMode = savedTheme === 'dark';
     } else {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(prefersDarkMode);
-      if (prefersDarkMode) {
-        html.classList.add('dark');
-      } else {
-        html.classList.remove('dark');
-      }
+      initialMode = prefersDarkMode;
     }
-
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('theme')) {
-        setIsDarkMode(e.matches);
-      }
-    };
-    mediaQuery.addEventListener('change', handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
+    
+    setIsDarkMode(initialMode);
+    
   }, []);
 
+  // This effect runs whenever isDarkMode changes, but only after mounting.
   useEffect(() => {
     if (hasMounted) {
       const html = document.documentElement;
@@ -66,6 +49,12 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode);
   };
+
+  // Crucially, we don't render the children until the component has mounted on the client.
+  // This ensures the server and initial client render are identical.
+  if (!hasMounted) {
+    return null; // Or you could return a loading spinner if you prefer.
+  }
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>

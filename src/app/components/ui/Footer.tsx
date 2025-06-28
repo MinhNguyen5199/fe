@@ -11,11 +11,11 @@ const Footer = () => {
           <Link href="/" className="flex items-center space-x-2 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-md">
             <Book className="w-8 h-8 text-indigo-600 dark:text-indigo-400 transform hover:scale-110 transition-transform duration-200" />
             <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 animate-pulse-light">
-              BookWise
+              ISummarize
             </span>
           </Link>
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-            &copy; {new Date().getFullYear()} BookWise. All rights reserved.
+            &copy; {new Date().getFullYear()} ISummarize. All rights reserved.
           </p>
           <p className="text-gray-500 dark:text-gray-500 text-xs mt-1">
             Accelerating knowledge, one summary at a time.

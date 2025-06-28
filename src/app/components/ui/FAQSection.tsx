@@ -5,7 +5,7 @@ import { ChevronDown } from 'lucide-react';
 
 const faqs = [
   {
-    question: "What makes BookWise AI summaries so powerful?",
+    question: "What makes ISummarize summaries so powerful?",
     answer: "Our summaries are generated using a proprietary AI model trained on millions of books and academic papers, ensuring high accuracy, conciseness, and retention of key concepts. We integrate advanced NLP techniques to provide unparalleled insights."
   },
   {
@@ -14,14 +14,14 @@ const faqs = [
   },
   {
     question: "Can I try before I buy?",
-    answer: "Yes! We offer a free trial period for the Basic tier. Simply sign up, and you can start summarizing books immediately to experience the power of BookWise AI."
+    answer: "Yes! We offer a free trial period for the Basic tier. Simply sign up, and you can start summarizing books immediately to experience the power of ISummarize AI."
   },
   {
     question: "What is the 'Silly Sh!t Challenge'?",
-    answer: "The 'Silly Sh!t Challenge' is our gamified feature inspired by popular online communities. It's a fun way to earn points, unlock achievements, and engage with the BookWise community by completing quirky, creative challenges related to books and summaries. It's designed to make learning even more enjoyable!"
+    answer: "The 'Silly Sh!t Challenge' is our gamified feature inspired by popular online communities. It's a fun way to earn points, unlock achievements, and engage with the ISummarize community by completing quirky, creative challenges related to books and summaries. It's designed to make learning even more enjoyable!"
   },
   {
-    question: "Is my data secure with BookWise?",
+    question: "Is my data secure with ISummarize?",
     answer: "Absolutely. We prioritize your data security and privacy. All your summaries and personal information are encrypted and stored securely. We adhere to strict data protection regulations to ensure your peace of mind."
   }
 ];

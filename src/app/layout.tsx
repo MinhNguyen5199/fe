@@ -7,8 +7,11 @@ import { AuthProvider } from "./context/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BookWise AI - Knowledge Unleashed",
+  title: "ISummarize - Knowledge Unleashed",
   description: "AI-Powered Book Summaries & Reviews for Accelerated Learning.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

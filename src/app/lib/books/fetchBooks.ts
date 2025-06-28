@@ -7,7 +7,7 @@ interface FetchBooksResponse {
 
 export async function fetchSimpleBookList(): Promise<FetchBooksResponse> {
   try {
-    const res = await fetch('http://localhost:4000/books/list-simple');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/list-simple`);
     const data = await res.json();
     if (!res.ok) return { message: data?.message || 'Failed to load books.' };
     return { data: data.data || [] };

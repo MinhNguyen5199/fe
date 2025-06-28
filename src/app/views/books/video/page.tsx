@@ -34,7 +34,7 @@ const ExitFullscreenIcon = () => (
 
 const LoadingSpinner = ({ size = 'h-8 w-8' }: { size?: string }) => (
     <div className="flex justify-center items-center">
-        <svg className={`animate-spin text-blue-600 ${size}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg className={`animate-spin text-blue-600 dark:text-blue-400 ${size}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -42,7 +42,7 @@ const LoadingSpinner = ({ size = 'h-8 w-8' }: { size?: string }) => (
 );
 
 const ErrorDisplay = ({ error, onRetry }: { error: string; onRetry: () => void }) => (
-    <div className="w-full p-4 bg-red-50 text-red-800 border border-red-200 rounded-lg text-center transition-all duration-300">
+    <div className="w-full p-4 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700 rounded-lg text-center transition-all duration-300">
         <p className="font-semibold mb-2">An Error Occurred</p>
         <p className="text-sm mb-4">{error}</p>
         <button onClick={onRetry} className="px-6 py-2 bg-red-600 text-white font-bold rounded-md hover:bg-red-700 transition-colors">
@@ -53,7 +53,7 @@ const ErrorDisplay = ({ error, onRetry }: { error: string; onRetry: () => void }
 
 const IdleState = ({ onGenerate, isSubmitting }: { onGenerate: () => void; isSubmitting: boolean }) => (
     <div className="text-center transition-opacity duration-500">
-        <p className="mb-4 text-gray-600">Bring this summary to life with a personalized video walkthrough.</p>
+        <p className="mb-4 text-gray-600 dark:text-gray-400">Bring this summary to life with a personalized video walkthrough.</p>
         <button
             onClick={onGenerate}
             disabled={isSubmitting}
@@ -66,15 +66,15 @@ const IdleState = ({ onGenerate, isSubmitting }: { onGenerate: () => void; isSub
 
 const ProcessingState = () => (
     <div className="text-center transition-opacity duration-500">
-        <p className="text-lg font-semibold text-gray-800 mb-2">Your video is being created...</p>
-        <p className="text-gray-500 mb-6">This may take a moment. Our AI is warming up!</p>
+        <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Your video is being created...</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-6">This may take a moment. Our AI is warming up!</p>
         <LoadingSpinner />
     </div>
 );
 
 const ActiveState = ({ iframeRef, videoData, onEndSession, onToggleFullScreen, isSubmitting, isFullscreen }: { iframeRef: React.RefObject<HTMLIFrameElement>; videoData: VideoData; onEndSession: () => void; onToggleFullScreen: () => void; isSubmitting: boolean; isFullscreen: boolean; }) => (
      <div className="w-full text-center transition-opacity duration-500">
-        <div className="relative aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-2xl mb-4 border border-gray-200">
+        <div className="relative aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-2xl mb-4 border border-gray-200 dark:border-gray-700">
              <iframe
                 ref={iframeRef}
                 key={videoData.tavus_video_id}
@@ -107,7 +107,7 @@ const ActiveState = ({ iframeRef, videoData, onEndSession, onToggleFullScreen, i
 
 const EndedState = ({ onGenerate }: { onGenerate: () => void }) => (
     <div className="text-center transition-opacity duration-500">
-        <p className="text-lg font-semibold text-gray-700 mb-4">This video session has ended.</p>
+        <p className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">This video session has ended.</p>
         <button
             onClick={onGenerate}
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-all shadow-md"
@@ -284,16 +284,16 @@ export default function VideoSummaryPage({ summary }: VideoSummarySectionProps) 
 
     if (!summary) {
         return (
-            <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-700 text-center">A text summary is required to generate a video.</p>
+            <div className="mt-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                <p className="text-yellow-700 dark:text-yellow-300 text-center">A text summary is required to generate a video.</p>
             </div>
         );
     }
 
     return (
         <section className="mt-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4 pb-3 border-b border-gray-200">AI Video Host</h2>
-            <div className="p-6 border border-gray-200 rounded-lg bg-white shadow-sm text-center min-h-[300px] flex flex-col justify-center items-center">
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">AI Video Host</h2>
+            <div className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800/50 shadow-sm text-center min-h-[300px] flex flex-col justify-center items-center">
                 {renderContent()}
             </div>
         </section>

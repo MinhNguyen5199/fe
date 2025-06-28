@@ -24,14 +24,12 @@ export default function BookReview({ bookId }: BookReviewProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [actionError, setActionError] = useState<string|null>(null);
 
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000';
-
     const fetchReviews = async () => {
         if (!bookId) return;
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${apiBaseUrl}/books/${bookId}/reviews`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${bookId}/reviews`);
             if (!response.ok) {
                 throw new Error('Failed to load reviews.');
             }
@@ -59,7 +57,7 @@ export default function BookReview({ bookId }: BookReviewProps) {
         setIsSubmitting(true);
         setActionError(null);
         try {
-            const response = await fetch(`${apiBaseUrl}/reviews`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -100,7 +98,7 @@ export default function BookReview({ bookId }: BookReviewProps) {
         setReviews(reviews.filter(r => r.review_id !== reviewId));
 
         try {
-            const response = await fetch(`${apiBaseUrl}/reviews/${reviewId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${reviewId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${session?.access_token}` }
             });
@@ -115,7 +113,7 @@ export default function BookReview({ bookId }: BookReviewProps) {
 
     const handleEditSave = async (reviewId: string) => {
         try {
-            const response = await fetch(`${apiBaseUrl}/reviews/${reviewId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${reviewId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -145,25 +143,25 @@ export default function BookReview({ bookId }: BookReviewProps) {
         setEditRating(review.rating);
     };
 
-    if (isLoading) return <div className="p-4 text-center text-gray-600">Loading reviews...</div>;
+    if (isLoading) return <div className="p-4 text-center text-gray-600 dark:text-gray-400">Loading reviews...</div>;
     if (error) return <div className="p-4 text-center text-red-500">Error: {error}</div>;
 
     return (
         <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 pb-2 border-b">Reviews</h2>
+            <h2 className="text-2xl font-bold mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">Reviews</h2>
 
             {user && !userHasReviewed && (
-                <form onSubmit={handleCreateReview} className="mb-8">
+                <form onSubmit={handleCreateReview} className="mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                     <textarea
                         value={newReviewText}
                         onChange={e => setNewReviewText(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                        className="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
                         rows={3}
                         placeholder="Share your thoughts about this book..."
                     />
                     <div className="mt-2 flex justify-between items-center">
                         <div className="flex items-center">
-                            <span className="text-sm text-gray-600 mr-3">Your Rating:</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400 mr-3">Your Rating:</span>
                             <div onMouseLeave={() => setHoverRating(0)} className="flex">
                                 {[1, 2, 3, 4, 5].map((starValue) => (
                                     <span
@@ -186,38 +184,38 @@ export default function BookReview({ bookId }: BookReviewProps) {
                             {isSubmitting ? 'Posting...' : 'Post Review'}
                         </button>
                     </div>
-                    {actionError && <p className="text-red-600 text-sm mt-2 text-right">{actionError}</p>}
+                    {actionError && <p className="text-red-600 dark:text-red-400 text-sm mt-2 text-right">{actionError}</p>}
                 </form>
             )}
 
             <div className="space-y-4">
-                {reviews.length === 0 && <p className="text-gray-600">No reviews yet. Be the first!</p>}
+                {reviews.length === 0 && <p className="text-gray-600 dark:text-gray-400">No reviews yet. Be the first!</p>}
                 {reviews.map((review) => (
-                    <div key={review.review_id} className="border p-4 rounded-lg bg-white">
+                    <div key={review.review_id} className="border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-800/50">
                         {editingReviewId === review.review_id ? (
                             <div>
-                                <select value={editRating} onChange={e => setEditRating(Number(e.target.value))} className="w-full p-2 mb-2 border rounded">
+                                <select value={editRating} onChange={e => setEditRating(Number(e.target.value))} className="w-full p-2 mb-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
                                      {[5, 4, 3, 2, 1].map(r => <option key={r} value={r}>{r} Star{r > 1 ? 's' : ''}</option>)}
                                 </select>
-                                <textarea value={editText} onChange={e => setEditText(e.target.value)} className="w-full p-2 border rounded" rows={4} />
+                                <textarea value={editText} onChange={e => setEditText(e.target.value)} className="w-full p-2 border rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" rows={4} />
                                 <div className="flex justify-end gap-2 mt-2">
-                                    <button onClick={() => setEditingReviewId(null)} className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                                    <button onClick={() => setEditingReviewId(null)} className="px-4 py-1 bg-gray-300 dark:bg-gray-600 rounded hover:bg-gray-400 dark:hover:bg-gray-500">Cancel</button>
                                     <button onClick={() => handleEditSave(review.review_id)} className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
                                 </div>
                             </div>
                         ) : (
                             <div>
                                 <div className="flex justify-between items-center mb-1">
-                                    <p className="font-semibold text-gray-900">{review.users?.username || 'Anonymous'}</p>
+                                    <p className="font-semibold text-gray-900 dark:text-gray-100">{review.users?.username || 'Anonymous'}</p>
                                     {user?.id === review.user_id && (
                                         <div className="flex gap-3">
-                                            <button onClick={() => handleEditStart(review)} className="text-sm font-medium text-blue-600 hover:underline">Edit</button>
-                                            <button onClick={() => handleDelete(review.review_id)} className="text-sm font-medium text-red-600 hover:underline">Delete</button>
+                                            <button onClick={() => handleEditStart(review)} className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
+                                            <button onClick={() => handleDelete(review.review_id)} className="text-sm font-medium text-red-600 dark:text-red-400 hover:underline">Delete</button>
                                         </div>
                                     )}
                                 </div>
                                 <p className="text-yellow-500 font-bold my-1">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</p>
-                                <p className="text-gray-700">{review.review_text}</p>
+                                <p className="text-gray-700 dark:text-gray-300">{review.review_text}</p>
                             </div>
                         )}
                     </div>

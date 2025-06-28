@@ -2,18 +2,27 @@
 
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase/client';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import GoogleSignInButton from '../../../components/auth/GoogleSignInButton';
 import AuthForm from '../../../components/auth/AuthForm';
 
 export default function LoginPage() {
   const { user, userProfile, loading, signOut } = useAuth();
+  const router = useRouter();
 
   const [loginFormLoading, setLoginFormLoading] = useState(false);
   const [pageError, setPageError] = useState('');
 
+
   const searchParams = useSearchParams();
+
+  // Redirect logged-in user to home page
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     const errorParam = searchParams.get('error');
@@ -54,7 +63,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
             <div className="w-full max-w-md p-4">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold">Sign In to BookWise</h1>
+                    <h1 className="text-3xl font-bold">Sign In to ISummarize</h1>
                     <p className="text-gray-500">Welcome back!</p>
                 </div>
 
@@ -82,7 +91,7 @@ export default function LoginPage() {
       <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-md text-center">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Dashboard</h1>
         <p>Logged in as: {user.email}</p>
-        <p>User ID: {user.id}</p>
+        {/* <p>User ID: {user.id}</p>
         <div className="mt-4 p-4 border rounded-md bg-gray-50 text-left">
           <h3 className="text-lg font-semibold mb-2">User Profile from DB:</h3>
           {userProfile ? (
@@ -92,7 +101,7 @@ export default function LoginPage() {
           ) : (
             <p>Loading profile...</p>
           )}
-        </div>
+        </div> */}
         <button onClick={signOut} className="mt-6 py-2 px-4 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md">
           Sign Out
         </button>

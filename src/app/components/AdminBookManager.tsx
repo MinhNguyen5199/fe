@@ -80,9 +80,8 @@ export default function AdminBookManager() {
       setIsSubmitting(false);
       return;
     }
-
     try {
-      const response = await fetch('http://localhost:4000/admin/books', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/books`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -262,7 +261,9 @@ export default function AdminBookManager() {
         {isLoadingBooks ? (
           <p className="text-center text-gray-600 p-4">Loading books...</p>
         ) : (
-          <BookList/>
+            <div className="max-w-sm w-full mx-auto">
+            <BookList />
+          </div>
         )}
       </section>
     </div>

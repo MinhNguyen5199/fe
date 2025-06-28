@@ -3,7 +3,7 @@ import { Quote, Star } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: "BookWise transformed my reading habits. The AI summaries are incredibly accurate and save me hours!",
+    quote: "ISummarize transformed my reading habits. The AI summaries are incredibly accurate and save me hours!",
     author: "Jane Doe, CEO of ReadFast",
     avatar: "https://placehold.co/80x80/6366F1/FFFFFF?text=JD",
     rating: 5
@@ -15,7 +15,7 @@ const testimonials = [
     rating: 5
   },
   {
-    quote: "Finally, a platform that truly understands the value of time. BookWise helps me stay informed without overwhelm.",
+    quote: "Finally, a platform that truly understands the value of time. ISummarize helps me stay informed without overwhelm.",
     author: "Emily White, Marketing Director",
     avatar: "https://placehold.co/80x80/14B8A6/FFFFFF?text=EW",
     rating: 4.5
@@ -30,7 +30,7 @@ const TestimonialsSection = () => {
           What Our Users Say
         </h3>
         <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto animate-fade-in animation-delay-200">
-          Hear from the thousands of learners and professionals who are accelerating their knowledge with BookWise.
+          Hear from the thousands of learners and professionals who are accelerating their knowledge with ISummarize.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

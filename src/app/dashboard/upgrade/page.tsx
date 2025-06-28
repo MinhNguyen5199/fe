@@ -123,12 +123,12 @@ export default function UpgradePage() {
   const trialPromoText = userProfile.is_student ? "Get a 7-day trial of the Student VIP Plan for just $3.99." : "Get a 7-day trial of the VIP Plan for just $6.99.";
   const showVipTrialPromo = !userProfile.had_trial;
   const plansToShow = userProfile.is_student ? [plans.studentPro, plans.studentVip] : [plans.pro, plans.vip];
-
+  
   const handleConfirmCancelation = async () => {
     if (!session) return;
     setIsLoading("cancel");
     try {
-      const response = await fetch("http://localhost:4000/cancel-subscription", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cancel-subscription`, {
           method: "POST",
           headers: { Authorization: `Bearer ${session.access_token}` },
         }
@@ -154,7 +154,7 @@ export default function UpgradePage() {
       const planIdentifier = [...allPlanOptions, ...allTrialOptions].find(o => o.priceId === newPriceId)?.id;
 
       const body = isSubscribed ? { newPriceId } : { planIdentifier };
-      const response = await fetch(`http://localhost:4000${endpoint}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
         body: JSON.stringify(body),
@@ -175,12 +175,12 @@ export default function UpgradePage() {
       setIsLoading(false);
     }
   };
-
+  
   const handleManageBilling = async () => {
     if (!session) return;
     setIsLoading("billing");
     try {
-      const response = await fetch("http://localhost:4000/create-portal-session", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/create-portal-session`, {
           method: "POST",
           headers: { Authorization: `Bearer ${session.access_token}` }
         }

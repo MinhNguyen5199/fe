@@ -51,7 +51,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="w-full max-w-md p-4">
         <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold">Create Your BookWise Account</h1>
+            <h1 className="text-3xl font-bold">Create Your ISummarize Account</h1>
         </div>
 
         {infoMessage &&
