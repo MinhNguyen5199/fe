@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { Summary } from '../../../lib/types';
+import { useAuth } from '../../context/AuthContext';
+import { Summary } from '../../lib/types';
 
 interface WordTimestamp {
   word: string;

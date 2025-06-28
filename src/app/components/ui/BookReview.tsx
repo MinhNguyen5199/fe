@@ -1,8 +1,8 @@
 'use client';
 
 import React, { FormEvent, useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { Review } from '../../../lib/types';
+import { useAuth } from '../../context/AuthContext';
+import { Review } from '../../lib/types';
 
 interface BookReviewProps {
     bookId: string;
@@ -24,27 +24,28 @@ export default function BookReview({ bookId }: BookReviewProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [actionError, setActionError] = useState<string|null>(null);
 
-    const fetchReviews = async () => {
-        if (!bookId) return;
-        setIsLoading(true);
-        setError(null);
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${bookId}/reviews`);
-            if (!response.ok) {
-                throw new Error('Failed to load reviews.');
-            }
-            const data = await response.json();
-            setReviews(data.data || []);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const fetchReviews = async () => {
+            if (!bookId) return;
+            setIsLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books/${bookId}/reviews`);
+                if (!response.ok) {
+                    throw new Error('Failed to load reviews.');
+                }
+                const data = await response.json();
+                setReviews(data.data || []);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    
         fetchReviews();
     }, [bookId]);
+    
 
     const userHasReviewed = useMemo(() => {
         if (!user) return false;

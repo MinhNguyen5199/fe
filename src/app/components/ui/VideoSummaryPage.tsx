@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { Summary } from '../../../lib/types';
+import { useAuth } from '../../context/AuthContext';
+import { Summary } from '../../lib/types';
 
 interface VideoData {
     summary_id: string;
@@ -118,7 +118,6 @@ const EndedState = ({ onGenerate }: { onGenerate: () => void }) => (
     </div>
 );
 
-
 export default function VideoSummaryPage({ summary }: VideoSummarySectionProps) {
     const { session } = useAuth();
     const accessToken = session?.access_token || null;
@@ -132,52 +131,58 @@ export default function VideoSummaryPage({ summary }: VideoSummarySectionProps) 
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
+    // Handle fullscreen change event
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(document.fullscreenElement !== null);
         };
 
         document.addEventListener('fullscreenchange', handleFullscreenChange);
-
         return () => {
             document.removeEventListener('fullscreenchange', handleFullscreenChange);
         };
     }, []);
 
-    const fetchInitialVideoState = async () => {
-        if (!summary?.summary_id || !accessToken) return;
-        setUiStatus('loading');
-        setError(null);
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/status`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` },
-            });
-            if (response.status === 404) {
-                setUiStatus('idle');
-                return;
-            }
-            if (!response.ok) throw new Error('Failed to fetch initial video status.');
-            const data: VideoData = await response.json();
-            setVideoData(data);
-            setUiStatus(data.status);
-        } catch (err) {
-            setError((err as Error).message);
-            setUiStatus('idle');
-        }
-    };
-
+    // Fetch initial video status
     useEffect(() => {
+        if (!summary?.summary_id || !accessToken) return;
+
+        const fetchInitialVideoState = async () => {
+            setUiStatus('loading');
+            setError(null);
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/status`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` },
+                });
+                if (response.status === 404) {
+                    setUiStatus('idle');
+                    return;
+                }
+                if (!response.ok) throw new Error('Failed to fetch initial video status.');
+                const data: VideoData = await response.json();
+                setVideoData(data);
+                setUiStatus(data.status);
+            } catch (err) {
+                setError((err as Error).message);
+                setUiStatus('idle');
+            }
+        };
+
         fetchInitialVideoState();
+
         return () => {
             if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
         };
     }, [summary, accessToken]);
 
+    // Polling for video status if processing
     useEffect(() => {
         const pollStatus = async () => {
-            if (!summary?.summary_id || !accessToken || uiStatus !== 'processing') return;
+            if (!summary?.summary_id || !accessToken) return;
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/status`, { headers: { 'Authorization': `Bearer ${accessToken}` } });
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/status`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` },
+                });
                 if (!response.ok) {
                     if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
                     throw new Error('Could not verify video status. Please try again.');
@@ -197,7 +202,10 @@ export default function VideoSummaryPage({ summary }: VideoSummarySectionProps) 
 
         if (uiStatus === 'processing') {
             pollingIntervalRef.current = setInterval(pollStatus, 5000);
+        } else {
+            if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
         }
+
         return () => {
             if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
         };
@@ -209,7 +217,10 @@ export default function VideoSummaryPage({ summary }: VideoSummarySectionProps) 
         setError(null);
         setUiStatus('processing');
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/summaries/${summary.summary_id}/video`, { method: 'POST', headers: { 'Authorization': `Bearer ${accessToken}` } });
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/summaries/${summary.summary_id}/video`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: 'An unknown error occurred during generation.' }));
                 throw new Error(errorData.message);
@@ -230,14 +241,41 @@ export default function VideoSummaryPage({ summary }: VideoSummarySectionProps) 
         if (!window.confirm("Are you sure you want to end this session? The video will be permanently deleted.")) return;
         setIsSubmitting(true);
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/end`, { method: 'POST', headers: { 'Authorization': `Bearer ${accessToken}` } });
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${accessToken}` } });
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/end`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
             setUiStatus('idle');
             setVideoData(null);
             setError(null);
         } catch (err) {
             setError("Could not end the session. Please refresh and try again.");
-            fetchInitialVideoState();
+            // Refetch initial state to sync UI
+            if (summary?.summary_id && accessToken) {
+                const retryFetch = async () => {
+                    try {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/${summary.summary_id}/status`, {
+                            headers: { 'Authorization': `Bearer ${accessToken}` },
+                        });
+                        if (response.ok) {
+                            const data: VideoData = await response.json();
+                            setVideoData(data);
+                            setUiStatus(data.status);
+                        } else {
+                            setUiStatus('idle');
+                            setVideoData(null);
+                        }
+                    } catch {
+                        setUiStatus('idle');
+                        setVideoData(null);
+                    }
+                };
+                retryFetch();
+            }
         } finally {
             setIsSubmitting(false);
         }

@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 import { Book } from '../../lib/types';
 import { useRouter } from 'next/navigation';
 
@@ -8,8 +9,11 @@ interface BookCardProps {
   book: Book;
 }
 
+const fallbackImage = 'https://placehold.co/300x450/000000/FFFFFF?text=No+Cover';
+
 const BookCard = ({ book }: BookCardProps) => {
   const router = useRouter();
+  const [imgSrc, setImgSrc] = useState(book.cover_image_url);
 
   const handleViewSummary = (bookId: string) => {
     router.push(`/views/books/${bookId}`);
@@ -21,11 +25,14 @@ const BookCard = ({ book }: BookCardProps) => {
       className="group relative flex w-full cursor-pointer flex-col overflow-hidden rounded-xl bg-gray-900 shadow-lg"
     >
       {/* Image wrapper */}
-      <div className="relative w-full bg-black">
-        <img
-          src={book.cover_image_url}
+      <div className="relative w-full aspect-[2/3] bg-black">
+        <Image
+          src={imgSrc || fallbackImage}
           alt={`Cover of ${book.title}`}
-          className="w-full h-auto object-contain transition-transform duration-500 ease-in-out group-hover:scale-100"
+          fill
+          sizes="(max-width: 768px) 100vw, 25vw"
+          className="object-contain transition-transform duration-500 ease-in-out group-hover:scale-100"
+          onError={() => setImgSrc(fallbackImage)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
       </div>
