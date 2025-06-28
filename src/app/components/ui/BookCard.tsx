@@ -25,13 +25,13 @@ const BookCard = ({ book }: BookCardProps) => {
       className="group relative flex w-full cursor-pointer flex-col overflow-hidden rounded-xl bg-gray-900 shadow-lg"
     >
       {/* Image wrapper */}
-      <div className="relative w-full aspect-[2/3] bg-black">
+      <div className="relative w-full aspect-[2.5/3] bg-black">
         <Image
           src={imgSrc || fallbackImage}
           alt={`Cover of ${book.title}`}
           fill
           sizes="(max-width: 768px) 100vw, 25vw"
-          className="object-contain transition-transform duration-500 ease-in-out group-hover:scale-100"
+          className="transition-transform duration-500 ease-in-out group-hover:scale-100"
           onError={() => setImgSrc(fallbackImage)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />

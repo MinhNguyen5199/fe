@@ -12,50 +12,32 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [hasMounted, setHasMounted] = useState(false);
 
-  // This effect runs once on the client after the component mounts.
+  // This effect runs on the client after the component mounts.
   useEffect(() => {
-    setHasMounted(true); // Signal that the component has mounted.
-
     const savedTheme = localStorage.getItem('theme');
     const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    let initialMode = false;
-    if (savedTheme) {
-      initialMode = savedTheme === 'dark';
-    } else {
-      initialMode = prefersDarkMode;
-    }
-    
+    const initialMode = savedTheme ? savedTheme === 'dark' : prefersDarkMode;
     setIsDarkMode(initialMode);
-    
   }, []);
 
-  // This effect runs whenever isDarkMode changes, but only after mounting.
+  // This effect runs whenever isDarkMode changes.
   useEffect(() => {
-    if (hasMounted) {
-      const html = document.documentElement;
-      if (isDarkMode) {
-        html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
+    const html = document.documentElement;
+    if (isDarkMode) {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
-  }, [isDarkMode, hasMounted]);
+  }, [isDarkMode]);
 
   const toggleDarkMode = () => {
     setIsDarkMode(prevMode => !prevMode);
   };
 
-  // Crucially, we don't render the children until the component has mounted on the client.
-  // This ensures the server and initial client render are identical.
-  if (!hasMounted) {
-    return null; // Or you could return a loading spinner if you prefer.
-  }
-
+  // Render children immediately on both server and client.
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
       {children}

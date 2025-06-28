@@ -24,13 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchUserProfile = useCallback(async () => {
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
-
-    if (!currentSession) {
-      setUserProfile(null);
-      return;
-    }
+  const fetchUserProfile = useCallback(async (currentSession: Session) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/get-user-profile`, {
         headers: { 'Authorization': `Bearer ${currentSession.access_token}` }
@@ -54,30 +48,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      if (session) {
-        await fetchUserProfile();
-      }
-      setLoading(false); // This is the crucial change
-    };
-
-    initializeAuth();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         setSession(newSession);
-        if (event === "SIGNED_IN") {
-          await fetchUserProfile();
-        } else if (event === "SIGNED_OUT") {
+        if (newSession) {
+          await fetchUserProfile(newSession);
+        } else {
           setUserProfile(null);
-          router.push('/views/auth/login');
-        } else if (event === "TOKEN_REFRESHED") {
-          await fetchUserProfile();
         }
       }
     );
+
+    // Set initial loading state to false once we have the session
+    const setInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      if(session) {
+        await fetchUserProfile(session);
+      }
+      setLoading(false);
+    }
+
+    setInitialSession();
 
     return () => {
       subscription.unsubscribe();
@@ -92,7 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut: async () => {
       await supabase.auth.signOut();
     },
-    fetchUserProfile
+    fetchUserProfile: async () => {
+      if(session) {
+        await fetchUserProfile(session);
+      }
+    }
   };
 
   return (
